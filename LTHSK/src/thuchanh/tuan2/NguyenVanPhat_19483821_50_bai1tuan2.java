@@ -5,12 +5,15 @@ import java.awt.Color;
 import java.awt.Font;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.text.DecimalFormat;
+import java.text.NumberFormat;
 
 import javax.swing.DefaultCellEditor;
 import javax.swing.JButton;
 import javax.swing.JComboBox;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
+import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JRadioButton;
 import javax.swing.JScrollPane;
@@ -18,6 +21,7 @@ import javax.swing.JSplitPane;
 import javax.swing.JTable;
 import javax.swing.JTextField;
 import javax.swing.SwingConstants;
+import javax.swing.table.DefaultTableCellRenderer;
 import javax.swing.table.DefaultTableModel;
 import javax.swing.table.TableColumn;
 
@@ -36,6 +40,7 @@ public class NguyenVanPhat_19483821_50_bai1tuan2 extends JFrame implements Actio
 	private JButton btnLuu;
 	private DefaultTableModel tableModel;
 	private JTable table;
+	private DecimalFormat myFormat;
 
 	public NguyenVanPhat_19483821_50_bai1tuan2() {
 		this.setTitle("19483821_NguyenVanPhat_50");
@@ -103,6 +108,13 @@ public class NguyenVanPhat_19483821_50_bai1tuan2 extends JFrame implements Actio
 		table = new JTable(tableModel);
 		JScrollPane scTable = new JScrollPane(table);
 		
+		DefaultTableCellRenderer right = new DefaultTableCellRenderer();
+		right.setHorizontalAlignment(JLabel.RIGHT);
+		table.getColumnModel().getColumn(0).setCellRenderer(right);
+		table.getColumnModel().getColumn(3).setCellRenderer(right);
+		table.getColumnModel().getColumn(0).setCellRenderer(right);
+		table.getColumnModel().getColumn(5).setCellRenderer(right);
+		
 		JComboBox cbGioiTinh = new JComboBox();
 		cbGioiTinh.addItem("Nam");
 		cbGioiTinh.addItem("Nữ");
@@ -114,7 +126,7 @@ public class NguyenVanPhat_19483821_50_bai1tuan2 extends JFrame implements Actio
 		table.setRowHeight(30);
 		pCen.add(scTable);
 		
-		String[] row = {"111", "Nguyễn","Văn Phát", "Nam", "21", "100 triệu/3năm"};
+		String[] row = {"111", "Nguyễn","Văn Phát", "Nam", "21", "100000 $"};
 		tableModel.addRow(row);
 		
 		// tao panel south
@@ -153,6 +165,9 @@ public class NguyenVanPhat_19483821_50_bai1tuan2 extends JFrame implements Actio
 		btnXoa.addActionListener(this);
 		btnLuu.addActionListener(this);
 		rdbGioiTinh.addActionListener(this);
+		
+		// test format
+		myFormat = new DecimalFormat("#,###.###");
 	}
 	
 	public static void main(String[] args) {
@@ -173,9 +188,31 @@ public class NguyenVanPhat_19483821_50_bai1tuan2 extends JFrame implements Actio
 		// TODO Auto-generated method stub
 		Object o = e.getSource();
 		if(o.equals(btnThem)) {
+			String luongFormat = myFormat.format(Double.parseDouble(txtTienLuong.getText()));
+			//String luongFormat = NumberFormat.getInstance().format(Double.parseDouble(txtTienLuong.getText()));
 			String[] row = {txtMaNV.getText(), txtHo.getText(), txtTen.getText(),
-					txtTuoi.getText(), kiemTraGT(), txtTienLuong.getText()};
+					kiemTraGT(), txtTuoi.getText(), luongFormat+" $"};
 			tableModel.addRow(row);
+		}
+		if(o.equals(btnXoa)) {
+			if(table.getSelectedRow() == -1) {
+				JOptionPane.showMessageDialog(null, "Chọn dòng cần xoá đi!");
+			}
+			else {
+				if(JOptionPane.showConfirmDialog(null, "Bạn có chắc muốn xoá người này không?",
+						"Cảnh báo", JOptionPane.YES_NO_OPTION) == JOptionPane.YES_OPTION) {
+					tableModel.removeRow(table.getSelectedRow());
+					//System.out.println("hàng số:" + table.getSelectedRow());
+				}
+			}
+		}
+		if(o.equals(btnTim)) {
+			table.clearSelection();
+			for(int i=0; i<tableModel.getRowCount(); i++) {
+				if(table.getValueAt(i, 0).equals(txtNhapSo.getText())) {
+					table.setRowSelectionInterval(i, i);
+				}
+			}
 		}
 	}
 }
